@@ -13,13 +13,14 @@ namespace fg_v1
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private List<IEntity> _entities;
+        private readonly AvatarFactory _avatarFactory;
 
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
             _entities = new List<IEntity>();
-            graphics.ToggleFullScreen();
             Content.RootDirectory = "Content";
+            _avatarFactory = new AvatarFactory(this.Content);
         }
 
         /// <summary>
@@ -30,8 +31,6 @@ namespace fg_v1
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -43,10 +42,7 @@ namespace fg_v1
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            var p1Tex = Content.Load<Texture2D>("player.png");
-            _entities.Add(new Avatar(p1Tex));
-
-            // TODO: use this.Content to load your game content here
+            _entities.Add(_avatarFactory.GetAvatar(AvatarType.Player));
         }
 
         /// <summary>
@@ -69,7 +65,7 @@ namespace fg_v1
                 Exit();
 
             foreach (var e in _entities)
-                e.Update(gameTime);
+                e.Update(gameTime, GamePad.GetState(0), Keyboard.GetState());
 
             base.Update(gameTime);
         }
@@ -81,11 +77,14 @@ namespace fg_v1
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
+            this.spriteBatch.Begin();
 
             foreach (var e in _entities)
                 e.Draw(this.spriteBatch);
 
             base.Draw(gameTime);
+
+            this.spriteBatch.End();
         }
     }
 }

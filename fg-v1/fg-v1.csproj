@@ -43,9 +43,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Avatar.cs" />
+    <Compile Include="AvatarFactory.cs" />
+    <Compile Include="AvatarState.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="IEntity.cs" />
+    <Compile Include="PlayerStateHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

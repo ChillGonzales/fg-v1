@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace fg_v1
 {
@@ -12,30 +13,37 @@ namespace fg_v1
     {
         private readonly Texture2D _texture;
         private double _updateTimer;
-        private Vector2 _position;
-        private readonly Action<GameTime> _updateLogic;
+        private AvatarState _state;
+        private readonly Action<AvatarState> _updateLogic;
 
-        public Avatar(Texture2D texture, Action<GameTime> updateLogic, Vector2? initialPosition = null)
+        public Avatar(Texture2D texture, Action<AvatarState> updateLogic, Vector2? initialPosition = null)
         {
             _texture = texture;
-            _position = initialPosition ?? Vector2.Zero;
             _updateLogic = updateLogic;
+            _state = new AvatarState()
+            {
+                Texture = _texture,
+                Position = initialPosition ?? Vector2.Zero
+            };
         }
         public void Draw(SpriteBatch batch)
         {
-            batch.Draw(_texture, _position, Color.White);
+            batch.Draw(_texture, _state.Position, Color.White);
         }
 
         public void Move(Vector2 amount)
         {
-            this._position += amount;
+            _state.Position += amount;
         }
 
-        public void Update(GameTime time)
+        public void Update(GameTime time, GamePadState gamepadState, KeyboardState keyboardState)
         {
             if (CheckUpdateTime(time))
             {
-                _updateLogic(time);
+                _state.GameTime = time;
+                _state.GamepadState = gamepadState;
+                _state.KeyboardState = keyboardState;
+                _updateLogic(_state);
             }
 
         }
@@ -47,7 +55,7 @@ namespace fg_v1
                 _updateTimer -= Constants.UpdateFrequency;
                 return true;
             }
-            else { return false; }
+            return false;
         }
 
     }
